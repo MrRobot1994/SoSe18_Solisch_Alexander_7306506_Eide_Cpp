@@ -189,7 +189,7 @@ void Game::stop(){
     timer->stop();
     timer1->stop();
     timer2->stop();
-    //Scoretimer->stop();
+    Scoretimer->stop();
     player->hide();
 }
 
@@ -199,6 +199,7 @@ void Game::resume(){
     timer->start();
     timer1->start();
     timer2->start();
+    Scoretimer->start();
     player->show();
 }
 

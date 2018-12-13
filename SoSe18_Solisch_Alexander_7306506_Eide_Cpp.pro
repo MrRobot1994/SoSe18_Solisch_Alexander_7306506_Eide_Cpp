@@ -29,8 +29,6 @@ SOURCES += \
     button.cpp \
     buttonmain.cpp \
     enemies.cpp \
-    enemies1.cpp \
-    enemies2.cpp \
     health.cpp \
     liveicon.cpp \
     player.cpp \

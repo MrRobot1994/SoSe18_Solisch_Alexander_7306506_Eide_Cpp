@@ -7,10 +7,12 @@ class enemies: public QObject,public QGraphicsRectItem{
   Q_OBJECT
 public:
 
-    enemies();
+    enemies(int x, int y, int width, int height, QBrush colour, int rotateAngle, int acceleration);
 
     //public attributes
     QTimer * timer1;
+    int rotateAngle;
+    int acceleration;
     int lastX;
     int lastY;
 

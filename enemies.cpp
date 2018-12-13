@@ -3,6 +3,7 @@
 #include <QList>
 #include <stdlib.h> //random integer
 #include <QDebug>
+#include <windows.h>
 #include <QApplication>
 #include "game.h"
 #include "enemies.h"
@@ -10,15 +11,18 @@
 
 extern Game * game;
 
-enemies::enemies():QObject(),QGraphicsRectItem(){
+enemies::enemies(int x, int y, int width, int height, QBrush colour, int _rotateAngle, int _acceleration):QObject(),QGraphicsRectItem(){
 
     //set random position
     int random_number = rand() % 900;
     setPos(random_number,0);
 
     //draw the rect
-    setRect(0,30,20,20);
-    setBrush(Qt::darkCyan);
+    setRect(x,y,width,height);
+    setBrush(colour);
+
+    rotateAngle = _rotateAngle;
+    acceleration = _acceleration;
 
     //connect
     timer1 = new QTimer(this);
@@ -51,19 +55,38 @@ void enemies::move(){
             //löschen von liveicon
             game->liveIcon1->deleteIcon();
 
+            //game->stopbutton->clicked();
+            //Sleep(1000);
+            //game->resumebutton->clicked();
+
+            //Freeze
+
+            game->stop();
+
+            Sleep(1000);
+
+            game->resume();
+
             //remove enemy
             scene()->removeItem(this);
 
             //delete enemie
             delete this;
 
+            //anwendung beenden, wenn der counter größer als 4ist
+            if( i>4){
+             game = new Game();
+            }
+
             return;
         }
     }
 
     //move enemies down
-    setRotation(y()+10);
-    setPos(x(),y()+5);
+    int angle = rotateAngle ? y() + rotateAngle : 0;
+
+    setRotation(angle);
+    setPos(x(),y()+acceleration);
         if (pos().y() > 600){
             //increase the score
             //gamee->health1->increaseScore();

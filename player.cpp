@@ -17,19 +17,19 @@ void Player::keyPressEvent(QKeyEvent *event){
 
 void Player::spawn(){
     //schaffung des enemy
-    enemies * enemy = new enemies();
+    enemies * enemy = new enemies(0, 30, 20, 20, Qt::darkCyan, 10, 5);
     scene()->addItem(enemy);
 }
 
 void Player::spawn1(){
 
-    enemies1 * enemy1 = new enemies1();
+    enemies * enemy1 = new enemies(0, 30, 25, 25, Qt::yellow, 2, 10);
     scene()->addItem(enemy1);
 }
 
 void Player::spawn2(){
 
-    enemies2 * enemy2 = new enemies2();
+    enemies * enemy2 = new enemies(0, 30, 40, 40, Qt::darkYellow, 0, 2);
     scene()->addItem(enemy2);
 }
 
