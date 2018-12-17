@@ -3,7 +3,6 @@
 #include <QList>
 #include <stdlib.h> //random integer
 #include <QDebug>
-#include <windows.h>
 #include <QApplication>
 #include "game.h"
 #include "enemies.h"
@@ -25,14 +24,12 @@ enemies::enemies(int x, int y, int width, int height, QBrush colour, int _rotate
     acceleration = _acceleration;
 
     //connect
-    timer1 = new QTimer(this);
-    connect(timer1,SIGNAL(timeout()),this,SLOT(move()));
-    timer1->start(50);
+    moveTimer = new QTimer(this);
+    connect(moveTimer,SIGNAL(timeout()),this,SLOT(move()));
+    moveTimer->start(50);
 
 //SLOT stop() mit Stopbutton verbunden (in game.cpp)
-connect(game->stopbutton,SIGNAL(clicked()),SLOT(stop()));
-//SLOT stop() mit Resumebutton verbunden (in game.cpp)
-connect(game->resumebutton,SIGNAL(clicked()),SLOT(resume()));
+connect(game->stopbutton,SIGNAL(clicked()),SLOT(pause()));
 //SLOT save() mit Savebutton verbunden (in game.cpp)
 //connect(gamee->savebutton,SIGNAL(clicked()),SLOT(save()));
 //SLOT load() mit Loadbutton verbunden (in game.cpp)
@@ -49,34 +46,14 @@ void enemies::move(){
     for(int i=0, n = colliding_items.size();i<n; i++){
         if(typeid(*(colliding_items[i])) ==  typeid(Player)){
 
-            //decreaselive the score
-            game->health1->decreaseLive();
-
-            //löschen von liveicon
-            game->liveIcon1->deleteIcon();
-
-            //game->stopbutton->clicked();
-            //Sleep(1000);
-            //game->resumebutton->clicked();
-
-            //Freeze
-
-            game->stop();
-
-            Sleep(1000);
-
-            game->resume();
-
             //remove enemy
             scene()->removeItem(this);
 
+            //decreaselive the score
+            game->health1->decreaseLive();
+
             //delete enemie
             delete this;
-
-            //anwendung beenden, wenn der counter größer als 4ist
-            if( i>4){
-             game = new Game();
-            }
 
             return;
         }
@@ -95,14 +72,23 @@ void enemies::move(){
         }
 }
 
+void enemies::pause(){
+    if(moveTimer->isActive()){
+        this->stop();
+    }
+    else{
+        this->resume();
+    }
+}
+
 void enemies::stop(){
     //stop den timer für enemy bewegung
-    timer1->stop();
+    moveTimer->stop();
 }
 
 void enemies::resume(){
     //startet timer wieder für enemy bewegung
-    timer1->start();
+    moveTimer->start();
 }
 
 

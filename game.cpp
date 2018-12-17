@@ -5,6 +5,7 @@
 #include "button.h"
 #include <QGraphicsRectItem>
 #include "enemies.h"
+#include <windows.h>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPalette>
@@ -59,12 +60,25 @@ Game::Game(QWidget *parent){
 
     //Kreierung der Punkte
     punkte = new score();
-    punkte->increase();
 
     health1 = new health();
-    health1->setPos(0,25);
 }
 
+void Game :: restart(){
+    delete timer;
+    delete timer1;
+    delete timer2;
+    delete Scoretimer;
+    delete health1;
+    health1 = new health();
+    delete punkte;
+    punkte = new score();
+    liveIcon1->setBrush(Qt::magenta);
+    liveIcon2->setBrush(Qt::magenta);
+    liveIcon3->setBrush(Qt::magenta);
+    player->setOpacity(1);
+    player->setFocus();
+}
 
 void Game::prestart(){
 
@@ -106,14 +120,7 @@ void Game::prestart(){
     int pxPos = 10;
     int pyPos = 520;
     stopbutton->setPos(pxPos,pyPos);
-    connect(stopbutton,SIGNAL(clicked()),SLOT(stop()));
-
-    //Kreierung des Continue buttons
-    resumebutton = new button(QString("Continue"));
-    int rxPos = 10;
-    int ryPos = 500;
-    resumebutton->setPos(rxPos,ryPos);
-    connect(resumebutton,SIGNAL(clicked()),SLOT(resume()));
+    connect(stopbutton,SIGNAL(clicked()),SLOT(pause()));
 
     //Kreierung des quit buttons
     quit= new button(QString("Quit"));
@@ -138,7 +145,39 @@ void Game::prestart(){
 }
 
 void Game::start(){
+    // Restarting game from game over menu
+    if (health1->getHealth() == 0) {
+        restart();
+    } else {
+        //Hinzufügen des player zur Szene
+        scene->addItem(player);
+
+        //Hinzufügen des liveIcon zur Szene
+        scene->addItem(liveIcon1);
+        scene->addItem(liveIcon2);
+        scene->addItem(liveIcon3);
+
+        scene->addItem(quit);
+        scene->addItem(loadbutton);
+        scene->addItem(savebutton);
+        scene->addItem(stopbutton);
+    }
+
+    //Entfernen des title
+    scene->removeItem(title);
+
+    //Hinzufügen des healths zur Szene
+    scene->addItem(health1);
+    //Hinzufügen des scores zur Szene
+    scene->addItem(punkte);
+
+    //Entfernen der Main buttons
+    scene->removeItem(startbuttonmain);
+    scene->removeItem(quitbuttonmain);
+    scene->removeItem(loadmain);
+
     //timer für spawn()
+
     timer = new QTimer();
       QObject::connect(timer,SIGNAL(timeout()),player,SLOT(spawn())); //spawn greift auf create enemy zu
        timer->start(750);
@@ -156,41 +195,34 @@ void Game::start(){
     QObject::connect(Scoretimer,SIGNAL(timeout()),punkte,SLOT(increase()));
     Scoretimer->start(1000);
 
-//Hinzuügen des resume button zur Szene
-       scene->addItem(resumebutton);
-//Hinzuügen des player zur Szene
-       scene->addItem(player);
-//Hinzuügen des score tzur Szene
-       scene->addItem(health1);
-//Hinzuügen des liveIcon zur Szene
-       scene->addItem(liveIcon1);
-       scene->addItem(liveIcon2);
-       scene->addItem(liveIcon3);
-//Hinzuügen des live zur Szene
-       scene->addItem(punkte);
-       //scene->addItem(score1);
-       scene->addItem(quit);
-       scene->addItem(loadbutton);
-       scene->addItem(savebutton);
-       scene->addItem(stopbutton);
-//Entfernen der Main buttons
-       scene->removeItem(startbuttonmain);
-       scene->removeItem(quitbuttonmain);
-       scene->removeItem(loadmain);
-//Entfernen des title
-       scene->removeItem(title);
-
-       player->show();
+    player->show();
 }
 
-void Game::stop(){
+void Game::stop(bool freeze){
 
     //stop timer enemy "generator" aus start()
     timer->stop();
     timer1->stop();
     timer2->stop();
     Scoretimer->stop();
-    player->hide();
+
+    // Freeze game for a second
+    if (freeze) {
+        Sleep(1000);
+    }
+}
+
+void Game::pause(){
+
+    if(timer->isActive()){
+        stopbutton->setText(QString("Start"));
+        this->stop(false);
+    }
+    else{
+        stopbutton->setText(QString("Pause"));
+        this->resume();
+    }
+
 }
 
 void Game::resume(){
@@ -200,7 +232,7 @@ void Game::resume(){
     timer1->start();
     timer2->start();
     Scoretimer->start();
-    player->show();
+    player->setFocus();
 }
 
 //Speicher funktion

@@ -18,8 +18,10 @@ public:
    Game(QWidget * parent=NULL);
 
     //public methods
-
+        void restart();
         void prestart();
+        void stop(bool freeze = true);
+        void resume();
 
     //public attributs
     QGraphicsScene * scene;
@@ -39,17 +41,15 @@ public:
     button1 * quitbuttonmain;
     button1 * loadmain;
     button * stopbutton;
-    button *resumebutton;
     button * loadbutton;
     button * savebutton;
     button * quit;
 
 public slots:
      void start();
-     void stop();
-     void resume();
      void load();
      void save();
+     void pause();
 };
 
 

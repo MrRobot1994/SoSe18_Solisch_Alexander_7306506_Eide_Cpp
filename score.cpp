@@ -8,7 +8,6 @@ extern Game * game;
 
 score::score(QGraphicsItem *parent) : QGraphicsTextItem(parent){
     //score bei 0 initialisieren
-    //score1 = 3;
     punkte = 0;
 
     //Text abbilden

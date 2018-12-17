@@ -9,6 +9,7 @@ class button :public QObject, public QGraphicsRectItem{
 public:
 
     button(QString name, QGraphicsItem * parent = NULL);
+    void setText(QString newText);
 
     //public methods
     void mousePressEvent(QGraphicsSceneMouseEvent * event);

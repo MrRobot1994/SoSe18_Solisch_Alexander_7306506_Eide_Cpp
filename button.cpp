@@ -40,3 +40,10 @@ void button::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     brush.setColor(Qt::darkMagenta);
     setBrush(brush);
 }
+
+void button::setText(QString newText) {
+    text->setPlainText(newText);
+    int xPos = rect().width()/2 - text->boundingRect().width()/2;
+    int yPos = rect().height()/2 - text->boundingRect().height()/2;
+    text->setPos(xPos,yPos);
+}
