@@ -7,8 +7,10 @@ public:
     health(QGraphicsItem * parent=0);
     //void increaseScore();
     int getHealth();
+    void setHealth( int _health);
 public slots:
     void decreaseLive();
+    void increaseLive();
 private:
     int health1;
 };

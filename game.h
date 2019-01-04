@@ -35,6 +35,7 @@ public:
     QTimer * timer;
     QTimer *timer1;
     QTimer *timer2;
+    QTimer *timerHeal;
     QTimer * Scoretimer;
     button * startbutton;
     button1 * startbuttonmain;
@@ -48,6 +49,7 @@ public:
 public slots:
      void start();
      void load();
+     void loadRestart();
      void save();
      void pause();
 };

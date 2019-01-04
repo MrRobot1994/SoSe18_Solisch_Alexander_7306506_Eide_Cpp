@@ -29,4 +29,11 @@ int score::getPunkte(){
 
 }
 
+void score::setPunkte(int _punkte){
+
+    this->punkte = _punkte;
+    setPlainText(QString("Score: ") + QString::number(_punkte));
+
+}
+
 

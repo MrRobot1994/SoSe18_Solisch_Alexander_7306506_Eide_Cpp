@@ -10,18 +10,47 @@
 
 extern Game * game;
 
-enemies::enemies(int x, int y, int width, int height, QBrush colour, int _rotateAngle, int _acceleration):QObject(),QGraphicsRectItem(){
+enemies::enemies(int x, int y, int _enemyType):QObject(),QGraphicsRectItem(){
+
+    this->enemyType = _enemyType;
+
+    int width;
+    int height;
+    QBrush colour;
+
+    if (enemyType == 1) {
+        width = 20;
+        height= 20;
+        colour= Qt::darkCyan;
+        rotateAngle= 3; //10
+        acceleration= 5;
+
+    } else if (enemyType == 2) {
+        width = 25;
+        height=25;
+        colour= Qt::yellow;
+        rotateAngle= 2;
+        acceleration= 10;
+    } else if (enemyType == 3) {
+        width = 40;
+        height= 40;
+        colour= Qt::darkYellow;
+        rotateAngle= 0;
+        acceleration= 2;
+    } else if (enemyType == 4) {
+        width = 30;
+        height= 30;
+        colour= Qt::green;
+        rotateAngle= 1;
+        acceleration= 4;
+    }
 
     //set random position
-    int random_number = rand() % 900;
-    setPos(random_number,0);
+    setPos(x,y);
 
     //draw the rect
-    setRect(x,y,width,height);
+    setRect(0,30,width,height);
     setBrush(colour);
-
-    rotateAngle = _rotateAngle;
-    acceleration = _acceleration;
 
     //connect
     moveTimer = new QTimer(this);
@@ -29,14 +58,12 @@ enemies::enemies(int x, int y, int width, int height, QBrush colour, int _rotate
     moveTimer->start(50);
 
 //SLOT stop() mit Stopbutton verbunden (in game.cpp)
-connect(game->stopbutton,SIGNAL(clicked()),SLOT(pause()));
+// connect(game->stopbutton,SIGNAL(clicked()),SLOT(pause()));
 //SLOT save() mit Savebutton verbunden (in game.cpp)
 //connect(gamee->savebutton,SIGNAL(clicked()),SLOT(save()));
 //SLOT load() mit Loadbutton verbunden (in game.cpp)
 //connect(gamee->loadbutton,SIGNAL(clicked()),SLOT(load()));
 }
-
-
 
 void enemies::move(){
 
@@ -49,8 +76,12 @@ void enemies::move(){
             //remove enemy
             scene()->removeItem(this);
 
-            //decreaselive the score
-            game->health1->decreaseLive();
+            if (this->getType() == 4) {
+                game->health1->increaseLive();
+            } else {
+                //decreaselive the score
+                game->health1->decreaseLive();
+            }
 
             //delete enemie
             delete this;
@@ -112,4 +143,8 @@ void enemies::load(QFile &file){
         lastX=x;
         lastY=y;
         update();
+}
+
+int enemies::getType() {
+    return enemyType;
 }

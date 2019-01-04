@@ -10,6 +10,7 @@ class score : public QGraphicsTextItem{
 public:
     score(QGraphicsItem * parent=0);
     int getPunkte();
+    void setPunkte(int punkte);
 
     QTimer * Scoretimer;
 

@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QPalette>
 #include <QBrush>
+#include <QTextStream>
 
 
 
@@ -68,6 +69,7 @@ void Game :: restart(){
     delete timer;
     delete timer1;
     delete timer2;
+    delete timerHeal;
     delete Scoretimer;
     delete health1;
     health1 = new health();
@@ -112,7 +114,7 @@ void Game::prestart(){
     int lx1Pos = this->width()/2 - loadmain->boundingRect().width()/2;;
     int ly1Pos = 275;
     loadmain->setPos(lx1Pos,ly1Pos);
-    connect(loadmain,SIGNAL(clicked()),this,SLOT(load()));
+    connect(loadmain,SIGNAL(clicked()),this,SLOT(loadRestart()));
     scene->addItem(loadmain);
 
     //Kreierung des pause buttons
@@ -179,16 +181,20 @@ void Game::start(){
     //timer für spawn()
 
     timer = new QTimer();
-      QObject::connect(timer,SIGNAL(timeout()),player,SLOT(spawn())); //spawn greift auf create enemy zu
-       timer->start(750);
+    QObject::connect(timer,SIGNAL(timeout()),player,SLOT(spawn())); //spawn greift auf create enemy zu
+    timer->start(750);
 
     timer1 = new QTimer();
-      QObject::connect(timer1,SIGNAL(timeout()),player,SLOT(spawn1())); //spawn greift auf create enemy zu
-       timer1->start(1000);
+    QObject::connect(timer1,SIGNAL(timeout()),player,SLOT(spawn1())); //spawn greift auf create enemy zu
+    timer1->start(1000);
 
     timer2 = new QTimer();
-         QObject::connect(timer2,SIGNAL(timeout()),player,SLOT(spawn2())); //spawn greift auf create enemy zu
-          timer2->start(20000);
+    QObject::connect(timer2,SIGNAL(timeout()),player,SLOT(spawn2())); //spawn greift auf create enemy zu
+    timer2->start(15000);
+
+    timerHeal = new QTimer();
+    QObject::connect(timerHeal,SIGNAL(timeout()),player,SLOT(spawnHeal())); //spawn greift auf create enemy zu
+    timerHeal->start(7000);
 
     //Erhöht den Score im Sekundentakt
     Scoretimer = new QTimer();
@@ -204,7 +210,18 @@ void Game::stop(bool freeze){
     timer->stop();
     timer1->stop();
     timer2->stop();
+    timerHeal->stop();
     Scoretimer->stop();
+    player->clearFocus();
+
+    QList<QGraphicsItem*> sceneItems = this->scene->items();
+    for(QGraphicsItem* item : sceneItems) {
+        enemies* enemy = dynamic_cast<enemies*>(item);
+        if (enemy == NULL) {
+            continue;
+        }
+        enemy->stop();
+    }
 
     // Freeze game for a second
     if (freeze) {
@@ -231,13 +248,25 @@ void Game::resume(){
     timer->start();
     timer1->start();
     timer2->start();
+    timerHeal->start();
     Scoretimer->start();
     player->setFocus();
+
+    QList<QGraphicsItem*> sceneItems = this->scene->items();
+    for(QGraphicsItem* item : sceneItems) {
+        enemies* enemy = dynamic_cast<enemies*>(item);
+        if (enemy == NULL) {
+            continue;
+        }
+        enemy->resume();
+    }
 }
 
 //Speicher funktion
 void Game::save(){
 
+    stopbutton->setText(QString("Start"));
+    this->stop(false);
     QFileDialog dialog(this);
     QString fileName;
     QFile file;
@@ -248,11 +277,26 @@ void Game::save(){
     if(fileName.isNull()==false)
     {
         file.setFileName(fileName);
+
+        QTextStream textStream(&file);
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text ))
         {
-            QMessageBox::warning(this,tr("Dateifehler"),tr("Folgende Datei kann nicht verwendet werdden: ") + fileName,QMessageBox::Ok);
-        }
+            QMessageBox::warning(this,tr("Dateifehler"),tr("Folgende Datei kann nicht verwendet werden: ") + fileName,QMessageBox::Ok);
+        } else {
+            textStream << player->x()<<endl<<player->y()<<endl;
+            textStream << punkte->getPunkte()<<endl;
+            textStream << health1->getHealth()<<endl;
 
+            QList<QGraphicsItem*> sceneItems = this->scene->items();
+            for(QGraphicsItem* item : sceneItems) {
+                enemies* enemy = dynamic_cast<enemies*>(item);
+                if (enemy == NULL) {
+                    continue;
+                }
+                enemy->stop();
+                textStream << enemy->x()<<endl<<enemy->y()<<endl<<enemy->getType()<<endl;
+            }
+        }
 
         file.close();
         return;
@@ -262,6 +306,8 @@ void Game::save(){
 //Lade funktion
 void Game::load(){
 
+    stopbutton->setText(QString("Start"));
+    this->stop(false);
     QFileDialog dialog(this);
     QString fileName;
     QFile file;
@@ -273,9 +319,34 @@ void Game::load(){
     if(fileName.isNull()==false)
     {
         file.setFileName(fileName);
+
+        QTextStream textStream(&file);
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QMessageBox::warning(this,tr("Dateifehler"),tr("Folgende Datei kann nicht geladen werden: ")+ fileName,QMessageBox::Ok);
+        } else {
+            int playerX = textStream.readLine().toInt();
+            int playerY = textStream.readLine().toInt();
+
+            player->setPos(playerX,playerY);
+            punkte->setPunkte(textStream.readLine().toInt());
+            health1->setHealth(textStream.readLine().toInt());
+
+            QList<QGraphicsItem*> sceneItems = this->scene->items();
+            for(QGraphicsItem* item : sceneItems) {
+                enemies* enemy = dynamic_cast<enemies*>(item);
+                if (enemy == NULL) {
+                    continue;
+                }
+                scene->removeItem(enemy);
+                delete enemy;
+            }
+
+            while(!textStream.atEnd()) {
+                enemies * enemy = new enemies(textStream.readLine().toInt(), textStream.readLine().toInt(), textStream.readLine().toInt());
+                scene->addItem(enemy);
+                enemy->stop();
+            }
         }
 
         file.close();
@@ -283,5 +354,7 @@ void Game::load(){
     }
 }
 
-
-
+void Game::loadRestart() {
+    this->start();
+    this->load();
+}

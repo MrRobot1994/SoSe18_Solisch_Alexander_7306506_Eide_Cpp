@@ -17,21 +17,25 @@ void Player::keyPressEvent(QKeyEvent *event){
 
 void Player::spawn(){
     //schaffung des enemy
-    enemies * enemy = new enemies(0, 30, 20, 20, Qt::darkCyan, 10, 5);
+    int random_number = rand() % 900;
+    enemies * enemy = new enemies(random_number, 0, 1);
     scene()->addItem(enemy);
 }
 
 void Player::spawn1(){
-
-    enemies * enemy1 = new enemies(0, 30, 25, 25, Qt::yellow, 2, 10);
+    int random_number = rand() % 900;
+    enemies * enemy1 = new enemies(random_number, 0, 2);
     scene()->addItem(enemy1);
 }
 
 void Player::spawn2(){
-
-    enemies * enemy2 = new enemies(0, 30, 40, 40, Qt::darkYellow, 0, 2);
+    int random_number = rand() % 900;
+    enemies * enemy2 = new enemies(random_number, 0, 3);
     scene()->addItem(enemy2);
 }
 
-
-
+void Player::spawnHeal(){
+    int random_number = rand() % 900;
+    enemies * healer = new enemies(random_number, 0, 4);
+    scene()->addItem(healer);
+}

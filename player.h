@@ -10,7 +10,7 @@ public slots:
     void spawn();
     void spawn1();
     void spawn2();
-
+    void spawnHeal();
 };
 
 

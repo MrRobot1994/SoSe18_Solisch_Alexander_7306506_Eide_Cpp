@@ -77,8 +77,54 @@ void health::decreaseLive(){
 
 }
 
+void health::increaseLive(){
+
+    if (health1 >= 3) {
+        return;
+    }
+
+    health1++;
+
+    if(health1==3){
+        game->liveIcon3->setBrush(Qt::magenta);
+        game->player->setOpacity(1);
+        //Freeze game and resume because game not over
+        game->stop();
+        game->resume();
+    }
+
+    if(health1==2){
+        game->liveIcon2->setBrush(Qt::magenta);
+        game->player->setOpacity(0.6);
+        //Freeze game and resume because game not over
+        game->stop();
+        game->resume();
+    }
+}
+
 int health::getHealth(){
 
       return health1;
+}
+
+void health::setHealth( int _health){
+
+    this->health1 = _health;
+    if (_health == 1) {
+        game->liveIcon1->setBrush(Qt::magenta);
+        game->liveIcon2->setBrush(Qt::darkGray);
+        game->liveIcon3->setBrush(Qt::darkGray);
+        game->player->setOpacity(0.3);
+    } else if (_health == 2) {
+        game->liveIcon1->setBrush(Qt::magenta);
+        game->liveIcon2->setBrush(Qt::magenta);
+        game->liveIcon3->setBrush(Qt::darkGray);
+        game->player->setOpacity(0.6);
+    } else if (_health == 3) {
+        game->liveIcon1->setBrush(Qt::magenta);
+        game->liveIcon2->setBrush(Qt::magenta);
+        game->liveIcon3->setBrush(Qt::magenta);
+        game->player->setOpacity(1);
+    }
 }
 

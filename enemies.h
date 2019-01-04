@@ -7,7 +7,7 @@ class enemies: public QObject,public QGraphicsRectItem{
   Q_OBJECT
 public:
 
-    enemies(int x, int y, int width, int height, QBrush colour, int rotateAngle, int acceleration);
+    enemies(int x, int y, int type);
 
     //public attributes
     QTimer * moveTimer;
@@ -15,6 +15,7 @@ public:
     int acceleration;
     int lastX;
     int lastY;
+    int getType();
 
 public slots:
     void move();
@@ -23,4 +24,7 @@ public slots:
     void pause();
     void save(QFile &file);
     void load(QFile &file);
+
+private:
+    int enemyType;
 };
