@@ -294,7 +294,7 @@ void Game::save(){
                     continue;
                 }
                 enemy->stop();
-                textStream << enemy->x()<<endl<<enemy->y()<<endl<<enemy->getType()<<endl;
+                textStream << enemy->x()<<endl<<enemy->y()<<endl<<enemy->getType()<<endl<<enemy->rotation()<<endl;
             }
         }
 
@@ -344,6 +344,7 @@ void Game::load(){
 
             while(!textStream.atEnd()) {
                 enemies * enemy = new enemies(textStream.readLine().toInt(), textStream.readLine().toInt(), textStream.readLine().toInt());
+                enemy->setRotation(textStream.readLine().toInt());
                 scene->addItem(enemy);
                 enemy->stop();
             }
