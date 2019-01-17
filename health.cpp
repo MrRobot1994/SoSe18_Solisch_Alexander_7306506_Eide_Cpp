@@ -59,7 +59,7 @@ void health::decreaseLive(){
         }
 
         //load game menu after death
-
+        // shows your score in the game over screen
         int finalScore = game->punkte->getPunkte();
         game->title = new QGraphicsTextItem(QString("Game Over! You scored ") + QString::number(finalScore) + QString(" points!"));
         QFont titleFont("comic sans",25);
@@ -77,6 +77,7 @@ void health::decreaseLive(){
 
 }
 
+//Get more life
 void health::increaseLive(){
 
     if (health1 >= 3) {
@@ -84,7 +85,7 @@ void health::increaseLive(){
     }
 
     health1++;
-
+// will become 3 so previous life was 2
     if(health1==3){
         game->liveIcon3->setBrush(Qt::magenta);
         game->player->setOpacity(1);
@@ -92,7 +93,7 @@ void health::increaseLive(){
         game->stop();
         game->resume();
     }
-
+// will become 2 so previous life was 1
     if(health1==2){
         game->liveIcon2->setBrush(Qt::magenta);
         game->player->setOpacity(0.6);
@@ -107,6 +108,8 @@ int health::getHealth(){
       return health1;
 }
 
+
+//determines the order of filled live icons regarding the lifes the player has
 void health::setHealth( int _health){
 
     this->health1 = _health;

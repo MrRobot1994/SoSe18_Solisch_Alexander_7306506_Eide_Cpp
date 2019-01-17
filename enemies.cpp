@@ -9,6 +9,7 @@
 #include "button.h"
 
 extern Game * game;
+//A lot changed in here, created enemy types instead of multiple cpp enemy files
 
 enemies::enemies(int x, int y, int _enemyType):QObject(),QGraphicsRectItem(){
 
@@ -17,7 +18,7 @@ enemies::enemies(int x, int y, int _enemyType):QObject(),QGraphicsRectItem(){
     int width;
     int height;
     QBrush colour;
-
+//declaration of types, type 4 is the healer
     if (enemyType == 1) {
         width = 20;
         height= 20;
@@ -57,12 +58,6 @@ enemies::enemies(int x, int y, int _enemyType):QObject(),QGraphicsRectItem(){
     connect(moveTimer,SIGNAL(timeout()),this,SLOT(move()));
     moveTimer->start(50);
 
-//SLOT stop() mit Stopbutton verbunden (in game.cpp)
-// connect(game->stopbutton,SIGNAL(clicked()),SLOT(pause()));
-//SLOT save() mit Savebutton verbunden (in game.cpp)
-//connect(gamee->savebutton,SIGNAL(clicked()),SLOT(save()));
-//SLOT load() mit Loadbutton verbunden (in game.cpp)
-//connect(gamee->loadbutton,SIGNAL(clicked()),SLOT(load()));
 }
 
 void enemies::move(){
@@ -75,7 +70,7 @@ void enemies::move(){
 
             //remove enemy
             scene()->removeItem(this);
-
+// increase life if you hit the healer, else decrease life if you hit the enemy, delete both healer an enemy
             if (this->getType() == 4) {
                 game->health1->increaseLive();
             } else {
@@ -83,7 +78,7 @@ void enemies::move(){
                 game->health1->decreaseLive();
             }
 
-            //delete enemie
+            //delete enemie/healer
             delete this;
 
             return;
@@ -96,13 +91,12 @@ void enemies::move(){
     setRotation(angle);
     setPos(x(),y()+acceleration);
         if (pos().y() > 600){
-            //increase the score
-            //gamee->health1->increaseScore();
             scene()->removeItem(this);
             delete this;
         }
 }
 
+//pause the movement of the enemies if the button pause is clicked, resume if it's klicked again
 void enemies::pause(){
     if(moveTimer->isActive()){
         this->stop();
@@ -112,11 +106,12 @@ void enemies::pause(){
     }
 }
 
+//stops enemies movement
 void enemies::stop(){
     //stop den timer für enemy bewegung
     moveTimer->stop();
 }
-
+// resumes enemies movement
 void enemies::resume(){
     //startet timer wieder für enemy bewegung
     moveTimer->start();

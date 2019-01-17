@@ -33,7 +33,7 @@ void Player::spawn2(){
     enemies * enemy2 = new enemies(random_number, 0, 3);
     scene()->addItem(enemy2);
 }
-
+// new spawn, heal object
 void Player::spawnHeal(){
     int random_number = rand() % 900;
     enemies * healer = new enemies(random_number, 0, 4);
